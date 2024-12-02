@@ -1,6 +1,6 @@
-import { WalletProvider } from './WalletContext';
-import { SignatureProvider } from './SignatureContext';
-import { AdminProvider } from './AdminContext';
+import { WalletProvider } from '../contexts/WalletContext';
+import { SignatureProvider } from '../contexts/SignatureContext';
+import { AdminProvider } from '../contexts/AdminContext';
 
 import Navbar from '../components/Navbar';
 import '../styles/globals.css';

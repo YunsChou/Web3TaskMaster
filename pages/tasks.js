@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useSignature } from './SignatureContext';
+import { useSignature } from '../contexts/SignatureContext';
 
-import { useWallet } from './WalletContext';
+import { useWallet } from '../contexts/WalletContext';
 import playerAbi from '../sABI/Player.json';
 
 // 设置常量

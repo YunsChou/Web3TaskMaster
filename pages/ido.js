@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import abi from '../sABI/PartnerIDO.json'; // 导入 ABI
 
-import { useWallet } from './WalletContext';
+import { useWallet } from '../contexts/WalletContext';
 
 export default function IDOPage() {
     const { walletAddress, walletClient, publicClient, connectWallet, disconnectWallet } = useWallet();  // 从 context 获取钱包地址

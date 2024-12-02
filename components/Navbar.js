@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router'; // 用于获取当前路由
 
-import { useWallet } from '@/pages/WalletContext';
-import { useAdmin } from '@/pages/AdminContext';
+import { useWallet } from '../contexts/WalletContext';
+import { useAdmin } from '../contexts/AdminContext';
 
 export default function Navbar() {
     const [selectedButton, setSelectedButton] = useState('');

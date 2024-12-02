@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { useRouter } from 'next/router';
-import { useAdmin } from './AdminContext';
+import { useAdmin } from '../contexts/AdminContext';
 
 export default function AdminPage() {
     const router = useRouter();

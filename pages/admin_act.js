@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useSignature } from './SignatureContext';  // 导入自定义的 SignatureContext
-import { useWallet } from './WalletContext';
+import { useSignature } from '../contexts/SignatureContext';  // 导入自定义的 SignatureContext
+import { useWallet } from '../contexts/WalletContext';
 import revPoolABI from '../sABI/RevenuePool.json';
 import { useRouter } from 'next/router';
-import { useAdmin } from './AdminContext';
+import { useAdmin } from '../contexts/AdminContext';
 
 import { ethers, parseEther } from 'ethers';
 
