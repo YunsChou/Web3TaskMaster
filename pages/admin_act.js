@@ -130,12 +130,12 @@ export default function AdminAct() {
                 >
                     添加任务
                 </button>
-                <button
+                {/* <button
                     onClick={() => setSelectedPage('permitSign')}
                     style={selectedPage === 'permitSign' ? styles.selectedSidebarButton : styles.sidebarButton}
                 >
                     Permit签名
-                </button>
+                </button> */}
                 <button
                     onClick={() => setSelectedPage('injectProfit')}
                     style={selectedPage === 'injectProfit' ? styles.selectedSidebarButton : styles.sidebarButton}
