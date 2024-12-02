@@ -1,10 +1,13 @@
 // pages/admin.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { useRouter } from 'next/router';
+import { useAdmin } from './AdminContext';
 
 export default function AdminPage() {
     const router = useRouter();
+
+    const { isLoggedIn, setIsLoggedIn } = useAdmin();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -12,10 +15,24 @@ export default function AdminPage() {
     // 处理登录按钮点击事件
     const handleLogin = (e) => {
         e.preventDefault();
+        // if (username == 'admin' && password == '123456') {
+        // } else {
+        //     alert('帐号或密码错误');
+        // }
         // alert(`帐号: ${username}, 密码: ${password}`);
+        if (username && password) {
+            setIsLoggedIn(true);
+            router.push('/admin_act');
+        }
 
-        router.push('/admin_act');  // 点击登录按钮跳转到 admin_act.js
     };
+
+    // // 监听 是否登录成功
+    // useEffect(() => {
+    //     if (isLoggedIn) {
+    //         router.push('/admin_act');
+    //     }
+    // }, [isLoggedIn, router]); // 依赖项为 username 和 password，只有这两个字段发生变化时触发
 
     return (
         <div style={styles.container}>

@@ -1,6 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSignature } from './SignatureContext';  // 导入自定义的 SignatureContext
+import { useWallet } from './WalletContext';
+import revPoolABI from '../sABI/RevenuePool.json';
+import { useRouter } from 'next/router';
+import { useAdmin } from './AdminContext';
+
+import { ethers, parseEther } from 'ethers';
 
 export default function AdminAct() {
+    const { walletClient, walletAddress } = useWallet();
+    const { isLoggedIn } = useAdmin();
+    const router = useRouter();
+
     // 控制左侧菜单选项的状态
     const [selectedPage, setSelectedPage] = useState('addTask');
 
@@ -9,7 +20,18 @@ export default function AdminAct() {
     const [taskDetails, setTaskDetails] = useState('');
     const [rewardToken, setRewardToken] = useState('');
     const [ethValue, setEthValue] = useState('');
+    // 注入收益
     const [ethInjection, setEthInjection] = useState('');
+
+    // 控制Permit签名相关的状态
+    const [signatureAmount, setSignatureAmount] = useState('');
+    const [signatureAddress, setSignatureAddress] = useState('');
+    const [confirmationMessage, setConfirmationMessage] = useState('');
+
+    // 获取更新签名金额的函数
+    const { updateSignatureAmount, updateSignaturePlayer, updateSignatureDealine, makeSignMessage } = useSignature();
+
+    const revenuePool_addr = '0x36Ff7c2F977a1C69Fc323dFDABf532C4725B8Ecd';
 
     // 处理新增任务
     const handleAddTask = () => {
@@ -20,10 +42,83 @@ export default function AdminAct() {
         alert(`任务名称：${taskName}\n任务细节：${taskDetails}\n奖励Token数：${rewardToken}\n任务Coin价值：${ethValue}`);
     };
 
+    // 监听 是否登录成功
+    useEffect(() => {
+        if (!isLoggedIn) {
+            router.push('/admin');
+        }
+    }, []);
+
     // 处理注入收益
-    const handleInjectProfit = () => {
+    const handleInjectProfit = async () => {
+        if (ethInjection == '') {
+            alert('请输入注入收益Coin数量');
+            return;
+        }
         console.log('注入收益Coin数量:', ethInjection);
-        alert(`注入收益Coin数量：${ethInjection}`);
+        // alert(`注入收益Coin数量：${ethInjection}`);
+
+        try {
+
+            // 2. 私钥（账户A的私钥）
+            const privateKey = "86cbd6a5f655a0089ef9bf49c89298f351ed5054df5674509b73b2ccc9eda9c3";  // s4Tester 私钥
+
+            // 3. 创建钱包对象
+            const provider = ethers.getDefaultProvider("sepolia");//new ethers.JsonRpcProvider("https://sepolia.infura.io/v3/61550621966d498082dc93e05a626460");  // 选择合适的 RPC URL（替换为正确的URL）
+            const wallet = new ethers.Wallet(privateKey, provider);
+            console.log("wallet: ", wallet.address);
+            // 4. 创建合约实例
+            const contract = new ethers.Contract(revenuePool_addr, revPoolABI, wallet);
+            console.log("contract: ", contract);
+            // 5. 调用合约函数并传入参数
+            async function callContract() {
+                const amount = 1000;  // 被传入的金额参数
+
+                try {
+                    // 使用钱包对象发送交易
+                    // const amountInWei = BigInt((parseFloat(ethInjection) * 1e18).toString()); // 转换为 BigInt
+                    const amountInWei = parseEther("200");
+                    console.log("amountInWei: ", amountInWei);
+                    const tx = await contract.injectingRevenue(amountInWei);
+                    console.log("Transaction sent:", tx.hash);
+
+                    // const tx = await contract.setMarketingToken('0x1F8eeC0b47cb25D6232133f8c88C971cCC70Cae7');
+                    // console.log("setMarketingToken: ", tx.hash);
+
+                    // // 等待交易被确认
+                    // const receipt = await tx.wait();
+                    // console.log("Transaction confirmed:", receipt);
+
+                    // const dividendPoolAmount = await contract.dividendPoolAmount();
+                    // console.log("dividendPoolAmount: ", dividendPoolAmount);
+                } catch (error) {
+                    console.error("Error calling contract:", error);
+                }
+            }
+
+            // 6. 调用合约函数
+            await callContract();
+        } catch (error) {
+            console.error('注入收益失败:', error);
+        }
+        // if (ethInjection > 0) {
+        //     alert('注入收益成功: ' + ethInjection);
+        //     setEthInjection("");
+        // }
+
+    };
+
+    // 处理Permit签名
+    const handlePermitSign = () => {
+        setConfirmationMessage(`签名金额: ${signatureAmount}, 签名地址: ${signatureAddress}`);
+        // 将签名金额更新到全局状态
+        updateSignatureAmount(signatureAmount);
+        updateSignaturePlayer(signatureAddress);
+        // 设置过期时间：当前时间 + 10分钟
+        const expirationTime = new Date().getTime() + 10 * 60 * 1000;
+        updateSignatureDealine(expirationTime);
+        // 执行签名
+        makeSignMessage();
     };
 
     return (
@@ -36,11 +131,18 @@ export default function AdminAct() {
                     添加任务
                 </button>
                 <button
+                    onClick={() => setSelectedPage('permitSign')}
+                    style={selectedPage === 'permitSign' ? styles.selectedSidebarButton : styles.sidebarButton}
+                >
+                    Permit签名
+                </button>
+                <button
                     onClick={() => setSelectedPage('injectProfit')}
                     style={selectedPage === 'injectProfit' ? styles.selectedSidebarButton : styles.sidebarButton}
                 >
                     注入收益
                 </button>
+
             </div>
 
             <div style={styles.content}>
@@ -58,10 +160,11 @@ export default function AdminAct() {
                         </div>
                         <div style={styles.formGroup}>
                             <label style={styles.label}>任务细节:</label>
-                            <textarea
+                            <input
+                                type="text"
                                 value={taskDetails}
                                 onChange={(e) => setTaskDetails(e.target.value)}
-                                style={styles.textarea}
+                                style={styles.input}
                             />
                         </div>
                         <div style={styles.formGroup}>
@@ -89,6 +192,42 @@ export default function AdminAct() {
                         >
                             新增任务
                         </button>
+                    </div>
+                )}
+
+                {selectedPage === 'permitSign' && (
+                    <div style={styles.permitSignPage}>
+                        <h2 style={styles.pageTitle}>Permit签名</h2>
+                        <div style={styles.formGroup}>
+                            <label style={styles.label}>签名金额:</label>
+                            <input
+                                type="number"
+                                value={signatureAmount}
+                                onChange={(e) => setSignatureAmount(e.target.value)}
+                                style={styles.input}
+                            />
+                        </div>
+                        <div style={styles.formGroup}>
+                            <label style={styles.label}>签名地址:</label>
+                            <input
+                                type="text"
+                                value={signatureAddress}
+                                onChange={(e) => setSignatureAddress(e.target.value)}
+                                style={styles.input}
+                            />
+                        </div>
+                        <button
+                            onClick={handlePermitSign}
+                            disabled={!signatureAmount || !signatureAddress}
+                            style={styles.button}
+                        >
+                            确认签名
+                        </button>
+                        {confirmationMessage && (
+                            <div style={styles.confirmationMessage}>
+                                {confirmationMessage}
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -175,6 +314,9 @@ const styles = {
     injectProfitPage: {
         padding: '20px',
     },
+    permitSignPage: {
+        padding: '20px',
+    },
     formGroup: {
         marginBottom: '15px',
     },
@@ -195,17 +337,6 @@ const styles = {
         backgroundColor: '#fafafa',
         color: '#333',
     },
-    textarea: {
-        width: '100%',
-        padding: '10px',
-        marginTop: '5px',
-        border: '1px solid #ddd',
-        borderRadius: '5px',
-        minHeight: '100px',
-        backgroundColor: '#fafafa',
-        color: '#333',
-        fontSize: '16px',
-    },
     button: {
         padding: '12px 20px',
         cursor: 'pointer',
@@ -217,5 +348,12 @@ const styles = {
         width: '100%',
         marginTop: '15px',
         fontSize: '16px',
+    },
+    confirmationMessage: {
+        marginTop: '20px',
+        padding: '10px',
+        backgroundColor: '#e0f7fa',
+        borderRadius: '5px',
+        color: '#00796b',
     },
 };

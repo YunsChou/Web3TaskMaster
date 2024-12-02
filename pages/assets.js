@@ -43,7 +43,7 @@ export default function AssetsPage() {
                         <h3 style={styles.moduleTitle}>分红池信息</h3>
                         <p style={styles.text}>待领取分红池 {n} Token</p>
                         <p style={styles.text}>价值 {m} USD</p>
-                        <p style={styles.text}>当前每份 OAX 可兑换 {l} Token</p>
+                        <p style={styles.text}>当前 1 OAX = {l} Token</p>
                     </div>
                     <div style={styles.module}>
                         <h3 style={styles.moduleTitle}>持有 OAX 信息</h3>
@@ -51,6 +51,7 @@ export default function AssetsPage() {
                         <p style={styles.text}>可兑换 {y} Token</p>
                     </div>
                     <div style={styles.module}>
+                        <h3 style={styles.moduleTitle}>兑换分红收益模块</h3>
                         <input
                             type="number"
                             value={oaxAmount}
@@ -68,7 +69,7 @@ export default function AssetsPage() {
                         <h3 style={styles.moduleTitle}>营销池信息</h3>
                         <p style={styles.text}>待领取营销池 {a} Token</p>
                         <p style={styles.text}>价值 {b} USD</p>
-                        <p style={styles.text}>当前每份 OMT 可兑换 {c} Token</p>
+                        <p style={styles.text}>当前 1 OMT = {c} Token</p>
                     </div>
                     <div style={styles.module}>
                         <h3 style={styles.moduleTitle}>持有 OMT 信息</h3>
@@ -76,6 +77,7 @@ export default function AssetsPage() {
                         <p style={styles.text}>可兑换 {j} Token</p>
                     </div>
                     <div style={styles.module}>
+                        <h3 style={styles.moduleTitle}>兑换营销收益模块</h3>
                         <input
                             type="number"
                             value={omtAmount}
