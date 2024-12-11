@@ -29,7 +29,7 @@ export default function AdminAct() {
     const [confirmationMessage, setConfirmationMessage] = useState('');
 
     // 获取更新签名金额的函数
-    const { updateSignatureAmount, updateSignaturePlayer, updateSignatureDealine, makeSignMessage } = useSignature();
+    // const { updateSignatureAmount, updateSignaturePlayer, updateSignatureDealine, makeSignMessage } = useSignature();
 
     const revenuePool_addr = '0x36Ff7c2F977a1C69Fc323dFDABf532C4725B8Ecd';
 
@@ -110,15 +110,15 @@ export default function AdminAct() {
 
     // 处理Permit签名
     const handlePermitSign = () => {
-        setConfirmationMessage(`签名金额: ${signatureAmount}, 签名地址: ${signatureAddress}`);
-        // 将签名金额更新到全局状态
-        updateSignatureAmount(signatureAmount);
-        updateSignaturePlayer(signatureAddress);
-        // 设置过期时间：当前时间 + 10分钟
-        const expirationTime = new Date().getTime() + 10 * 60 * 1000;
-        updateSignatureDealine(expirationTime);
-        // 执行签名
-        makeSignMessage();
+        // setConfirmationMessage(`签名金额: ${signatureAmount}, 签名地址: ${signatureAddress}`);
+        // // 将签名金额更新到全局状态
+        // updateSignatureAmount(signatureAmount);
+        // updateSignaturePlayer(signatureAddress);
+        // // 设置过期时间：当前时间 + 10分钟
+        // const expirationTime = new Date().getTime() + 10 * 60 * 1000;
+        // updateSignatureDealine(expirationTime);
+        // // 执行签名
+        // makeSignMessage();
     };
 
     return (
